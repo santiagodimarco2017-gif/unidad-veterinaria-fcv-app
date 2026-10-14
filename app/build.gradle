@@ -1,0 +1,43 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'ar.fcv.unidadvet'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'ar.fcv.unidadvet.dosis'
+        minSdk 24
+        targetSdk 35
+        // En CI se pasa -PbuildNumber=<n> para que cada APK sea una versión mayor.
+        versionCode((project.findProperty('buildNumber') ?: '1') as int)
+        versionName "1.0.${project.findProperty('buildNumber') ?: '0'}"
+    }
+
+    signingConfigs {
+        // Clave fija incluida en el repo para que cada APK nuevo se instale
+        // como actualización del anterior (app de uso interno).
+        unidadvet {
+            storeFile rootProject.file('keystore/unidadvet.keystore')
+            storePassword 'android'
+            keyAlias 'unidadvet'
+            keyPassword 'android'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.unidadvet
+        }
+        debug {
+            signingConfig signingConfigs.unidadvet
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
