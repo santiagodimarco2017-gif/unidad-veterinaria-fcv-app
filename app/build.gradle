@@ -15,24 +15,27 @@ android {
         versionName "1.0.${project.findProperty('buildNumber') ?: '0'}"
     }
 
+    // La clave de firma NO está en el repo: en CI se arma desde los secrets
+    // KEYSTORE_BASE64 y KEYSTORE_PASSWORD. Con una clave fija, cada APK nuevo
+    // se instala como actualización del anterior.
+    def ks = System.getenv('KEYSTORE_FILE')
     signingConfigs {
-        // Clave fija incluida en el repo para que cada APK nuevo se instale
-        // como actualización del anterior (app de uso interno).
-        unidadvet {
-            storeFile rootProject.file('keystore/unidadvet.keystore')
-            storePassword 'android'
-            keyAlias 'unidadvet'
-            keyPassword 'android'
+        if (ks) {
+            unidadvet {
+                storeFile file(ks)
+                storePassword System.getenv('KEYSTORE_PASSWORD')
+                keyAlias 'unidadvet'
+                keyPassword System.getenv('KEYSTORE_PASSWORD')
+            }
         }
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.unidadvet
-        }
-        debug {
-            signingConfig signingConfigs.unidadvet
+            // Sin secrets se firma con la clave de depuración (instala igual,
+            // pero puede pedir desinstalar la versión anterior al actualizar).
+            signingConfig ks ? signingConfigs.unidadvet : signingConfigs.debug
         }
     }
 

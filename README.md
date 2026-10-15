@@ -20,3 +20,13 @@ Abrí la página de Releases desde el celular, descargá el archivo e instalalo.
 - `app/src/main/java/.../MainActivity.java`: contenedor WebView.
 
 > Herramienta de apoyo: verificar siempre las dosis con criterio clínico.
+
+## Clave de firma (opcional, recomendado)
+
+Para que cada APK nuevo se instale como actualización sin desinstalar el anterior,
+cargá en *Settings → Secrets and variables → Actions* del repo:
+
+- `KEYSTORE_BASE64`: el keystore codificado en base64.
+- `KEYSTORE_PASSWORD`: su contraseña.
+
+Sin esos secrets el APK se firma con una clave de depuración.
